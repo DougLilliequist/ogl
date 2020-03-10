@@ -57,9 +57,10 @@ export class Shadow {
         }
 
         // Create custom override program
-        mesh.depthProgram = new Program(gl, {
+        mesh.depthProgram = new Program(this.gl, {
             vertex,
             fragment,
+            uniforms: mesh.program.uniforms !== null ? mesh.program.uniforms : null,
             cullFace: null,
         });
     }
@@ -71,7 +72,14 @@ export class Shadow {
         scene.traverse(node => {
             if (!node.draw) return;
             if (!!~this.castMeshes.indexOf(node)) {
+                
+                let u;
+                if(node.program.uniforms) {
+                    u = node.program.uniforms;
+                }
+
                 node.program = node.depthProgram;
+                node.program.uniforms = u;
             } else {
                 if (node.visible) node.isForceVisibility = true;
                 node.visible = false;
